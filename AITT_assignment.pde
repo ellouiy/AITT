@@ -11,8 +11,10 @@ Capture cam;
 
 Rectangle[] faces;
 Rectangle[] noses;
+String s;
 
 PImage yerder;
+PFont font1;
 
 void setup() 
 {
@@ -22,8 +24,8 @@ void setup()
   faceopencv = new OpenCV(this, cam.width, cam.height);
   noseopencv = new OpenCV(this, cam.width, cam.height);
   
-  yerder = loadImage("baby (2).png");
-  //yerder = loadImage("trump.png");
+  //yerder = loadImage("baby (2).png");
+  yerder = loadImage("trump.png");
 
   surface.setResizable(true);
   surface.setSize(faceopencv.width, faceopencv.height);
@@ -34,6 +36,9 @@ void setup()
 
   loom = new Loom(this, 160);
   pat1 = new Pattern(loom);
+  
+  s = "infant yerder";
+  font1 = loadFont("starjout.ttf");
   
   cam.start();
 }
@@ -48,7 +53,9 @@ void draw()
    
     image(cam, 0, 0);
     faces = faceopencv.detect();
-
+   textFont(font1);
+   text(s, 300, 70);
+    
     for (int i = 0; i < faces.length; i++)
     {
       noFill();
