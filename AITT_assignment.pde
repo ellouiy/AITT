@@ -1,19 +1,18 @@
 import gab.opencv.*;
 import processing.video.*;
+import processing.sound.*;
 import java.awt.Rectangle;
-import com.corajr.loom.*;
 import themidibus.*;
 
-OpenCV faceopencv, noseopencv, mouthopencv;
-Loom loom;
-Pattern pat1;
-MidiBus myBus;
+OpenCV faceopencv, noseopencv, mouthopencv, eyeopencv;
 
+SoundFile file;
 Capture cam;
 
 Rectangle[] faces;
 Rectangle[] noses;
 Rectangle[] mouths;
+Rectangle[] eyes;
 String s;
 
 PImage yerder;
@@ -33,27 +32,22 @@ void setup()
   faceopencv = new OpenCV(this, cam.width, cam.height);
   noseopencv = new OpenCV(this, cam.width, cam.height);
   mouthopencv = new OpenCV(this, cam.width, cam.height);
+  eyeopencv = new OpenCV(this, cam.width, cam.height);
 
-  yerder = loadImage("big_dog.png");
+  yerder = loadImage("infant_yerder.png");
 
   surface.setResizable(true);
   surface.setSize(faceopencv.width, faceopencv.height);
-  surface.setSize(noseopencv.width, noseopencv.height);
-  surface.setSize(mouthopencv.width, mouthopencv.height);
 
   faceopencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
   noseopencv.loadCascade(OpenCV.CASCADE_NOSE);
   mouthopencv.loadCascade(OpenCV.CASCADE_MOUTH);
+  eyeopencv.loadCascade(OpenCV.CASCADE_EYE);
 
-  /*loom = new Loom(this, 160);
-   pat1 = new Pattern(loom);
-   
-   myBus = new MidiBus(this, -1, "No1 Baby");
-   loom.setMidiBus(myBus);
-   */
 
-  //pat1.extend("0110111011");
-  //pat1.add("clap");
+  file = new SoundFile(this, "Cantina.mp3");
+  //MidiBus.list();
+
 
   s = "infant yerder";
 
@@ -61,6 +55,7 @@ void setup()
   textFont(font1);
 
   cam.start();
+  file.play();
 }
 
 void draw() 
@@ -77,7 +72,6 @@ void draw()
     text(s, 300, 70);
 
     faceDetection();
-
 
     //OPTICAL FLOW
     faceopencv.calculateOpticalFlow();
@@ -96,52 +90,23 @@ void draw()
     flowLengthX = noseopencv.width/2 + averageFlow.x*flowScale;
     line(noseopencv.width/2, noseopencv.height/2, flowLengthX, flowLengthY);
 
-    if (flowLengthY > 250 && flowLengthX > 200)
+    //println(flowLengthY);
+
+    if (flowLengthY > 260 && flowLengthX > 200)
     {
-      println("I'M HERE I'M HERE PLS NOTICE ME");
+      // println("I'M SPEEDING UP...\n");
+      file.rate(1.2);
+    }
+
+    if (flowLengthY < 250)
+    {
+      file.rate(1);
+      //println("I'M SLOWING DOWN...");
     }
   }
 }
 
-void faceDetection() {
 
-  for (int i = 0; i < faces.length; i++)
-  {
-    noFill();
-    stroke(255, 0, 0);
-    strokeWeight(3);
-    //println(faces.length + " face" );
-    rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
-
-    noseopencv.loadImage((PImage) cam);
-    noseopencv.setROI((faces[i].x), (faces[i].y), faces[i].width, faces[i].height);
-    noses = noseopencv.detect();
-
-    for (int j = 0; j < noses.length; j++)
-    {
-      stroke(0, 255, 0);
-      strokeWeight(3);
-      //  println(noses.length + " nose");
-
-      //ellipse((faces[i].x + noses[j].x), (faces[i].y + noses[j].y), noses[j].width, noses[j].height)
-
-      mouthopencv.loadImage((PImage) cam);
-      mouthopencv.setROI((faces[i].x), (faces[i].y), faces[i].width, faces[i].height);
-      mouths = mouthopencv.detect();
-
-      for (int m = 0; m < mouths.length; m++)
-      {
-        stroke(0, 255, 0);
-        strokeWeight(3);
-        //   println(mouths.length + " mouths");
-
-        image(yerder, faces[i].x-40, faces[i].y-20, faces[i].width+100, faces[i].height+50);
-      }
-      mouthopencv.releaseROI();
-    }
-    noseopencv.releaseROI();
-  }
-}
 
 void initCamera()
 {
