@@ -6,23 +6,26 @@ import themidibus.*;
 
 OpenCV faceopencv, noseopencv, mouthopencv, eyeopencv;
 
-SoundFile file;
+
 Capture cam;
 
-Rectangle[] faces;
-Rectangle[] noses;
-Rectangle[] mouths;
-Rectangle[] eyes;
-String s;
+Rectangle[] faces, noses, mouths, eyes;
 
-PImage yerder;
+String s, maskName, musicName;
+
+
+
+String[] music = {"Cantina.mp3", "scifi.mp3", "jazz.mp3"};
+SoundFile[] musicFiles = new SoundFile[music.length];
+SoundFile currentFile;
+
 PFont font1;
 
 PVector averageFlow;
 
-int flowScale = 50;
-float flowLengthY;
-float flowLengthX;
+int flowScale = 50, faceX, faceY, faceWidth, faceHeight;
+int count;
+float flowLengthY, flowLengthX;
 
 void setup() 
 {
@@ -34,8 +37,6 @@ void setup()
   mouthopencv = new OpenCV(this, cam.width, cam.height);
   eyeopencv = new OpenCV(this, cam.width, cam.height);
 
-  yerder = loadImage("infant_yerder.png");
-
   surface.setResizable(true);
   surface.setSize(faceopencv.width, faceopencv.height);
 
@@ -44,18 +45,22 @@ void setup()
   mouthopencv.loadCascade(OpenCV.CASCADE_MOUTH);
   eyeopencv.loadCascade(OpenCV.CASCADE_EYE);
 
+  count = 0;
 
-  file = new SoundFile(this, "Cantina.mp3");
+ 
+  loadImage("infant_yerder.png");
+  loadImage("princess_buns.png");
+  loadImage("nerf_herder.png");
+  loadImage("big_dog.png");
+  
+  currentFile = new SoundFile(this, "Cantina.mp3");
   //MidiBus.list();
-
-
   s = "infant yerder";
-
   font1 = createFont("Comic Sans MS Bold", 12);
   textFont(font1);
 
   cam.start();
-  file.play();
+  currentFile.play();
 }
 
 void draw() 
@@ -94,18 +99,29 @@ void draw()
 
     if (flowLengthY > 260 && flowLengthX > 200)
     {
-      // println("I'M SPEEDING UP...\n");
-      file.rate(1.2);
+      println("I'M SPEEDING UP...\n");
+      //file.rate(1.2);
     }
 
     if (flowLengthY < 250)
     {
-      file.rate(1);
+      //file.rate(1);
       //println("I'M SLOWING DOWN...");
+    }
+    
+    println(flowLengthX + " THIS IS X");
+    println(flowLengthY + " THIS IS Y");
+    if(flowLengthX > 400 && flowLengthY > 260)
+    {
+      count++;
     }
   }
 }
 
+void mousePressed() 
+{
+  count++;
+}
 
 
 void initCamera()

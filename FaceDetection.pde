@@ -1,5 +1,9 @@
-void faceDetection() {
 
+ String maskNames[] ={"infant_yerder.png", "princess_buns.png", "nerf_herder.png", "big_dog.png"};
+ PImage[] masks = new PImage[maskNames.length]; 
+PImage currentMask;
+void faceDetection() 
+{
   for (int i = 0; i < faces.length; i++)
   {
     noFill();
@@ -28,8 +32,7 @@ void faceDetection() {
       //orange coloured line
       stroke(255, 100, 0);
       strokeWeight(3);
-      println(noses[j].x + " nose PLACE X ");
-      println(noses[j].y + " nose PLACE Y");
+     
       int noseX = noses[j].x + noseZoneX;
       int noseY = noses[j].y + noseZoneY;
       int noseWidth = noses[j].width;
@@ -54,9 +57,20 @@ void faceDetection() {
         strokeWeight(3);
         int mouthX = mouths[m].x;
         int mouthY = mouths[m].y;
+        
+       changeMasks();
+         
+       //FOR SOME REASON the below block of code won't work if I put it into the changeMasks method? Therefore keepingi t out here.   
+        maskName = maskNames[count];
+        masks[count] = loadImage(maskName);
+        currentMask = masks[count];
+        println("THIS IS THE CURRENT MASK: " + maskName);
+        image(currentMask, faceX, faceY, faceWidth, faceHeight);
+        
 
-        image(yerder, faceX, faceY, faceWidth, faceHeight);
-
+       
+ 
+       // image(masks[count], faceX, faceY, faceWidth, faceHeight);
         //draws where the mouth is on the face
         rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
       }
@@ -64,4 +78,28 @@ void faceDetection() {
     }
     noseopencv.releaseROI();
   }
+
+}
+
+void changeMasks()
+{
+ // currentFile.stop();
+
+  if (count == maskNames.length)
+  {
+    count = 0;
+  }
+
+ 
+
+  println(count);
+  println("I'VE CHANGED MASK: " + maskName);
+
+  /* musicName = music[count];
+   musicFiles[count] = new SoundFile(this, musicName );
+   currentFile = musicFiles[count];
+   currentFile.play();
+   
+   println("I'M THE NEXT MUSIC: " + musicName);
+   */
 }
