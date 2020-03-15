@@ -1,7 +1,13 @@
 
- String maskNames[] ={"infant_yerder.png", "princess_buns.png", "nerf_herder.png", "big_dog.png"};
- PImage[] masks = new PImage[maskNames.length]; 
+String maskNames[] ={"infant_yerder.png", "princess_buns.png", "nerf_herder.png", "big_dog.png"};
+PImage[] masks = new PImage[maskNames.length]; 
 PImage currentMask;
+
+String[] music = {"Cantina.mp3", "scifi.mp3", "jazz.mp3"};
+SoundFile[] musicFiles = new SoundFile[music.length];
+SoundFile currentFile;
+
+
 void faceDetection() 
 {
   for (int i = 0; i < faces.length; i++)
@@ -18,21 +24,28 @@ void faceDetection()
     int noseZoneY = faceY + (faceHeight/3);
     int noseZoneWidth = faceWidth/2; //3 sometimes works
     int noseZoneHeight = faceHeight/2;
+    int eyeZoneX = faceX;
+    int eyeZoneY = faceY;
+    int eyeZoneWidth = faceWidth;
+    int eyeZoneHeight = faceHeight/2;
 
     //rect(faceX, faceY, faces[i].width, faces[i].height);
 
     noseopencv.loadImage((PImage) cam);
     stroke(0, 0, 255);
     noseopencv.setROI(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
-    rect(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
+    eyeopencv.setROI(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
+    rect(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
+    //rect(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
     noses = noseopencv.detect();
+    pairsOfEyes = eyeopencv.detect();
 
     for (int j = 0; j < noses.length; j++)
     {
       //orange coloured line
       stroke(255, 100, 0);
       strokeWeight(3);
-     
+
       int noseX = noses[j].x + noseZoneX;
       int noseY = noses[j].y + noseZoneY;
       int noseWidth = noses[j].width;
@@ -57,49 +70,57 @@ void faceDetection()
         strokeWeight(3);
         int mouthX = mouths[m].x;
         int mouthY = mouths[m].y;
-        
-       changeMasks();
-         
-       //FOR SOME REASON the below block of code won't work if I put it into the changeMasks method? Therefore keepingi t out here.   
+
+        changeMasks();
+
+        //FOR SOME REASON the below block of code won't work if I put it into the changeMasks method? Therefore keepingi t out here.   
         maskName = maskNames[count];
         masks[count] = loadImage(maskName);
         currentMask = masks[count];
         println("THIS IS THE CURRENT MASK: " + maskName);
-        image(currentMask, faceX, faceY, faceWidth, faceHeight);
-        
+        //currentFile.stop();
+        //image(currentMask, faceX, faceY, faceWidth, faceHeight);
 
-       
- 
-       // image(masks[count], faceX, faceY, faceWidth, faceHeight);
+        //DO THE SAME FOR MUSIC
+        /*musicName = music[count];
+         musicFiles[count] = new SoundFile(this, musicName );
+         currentFile = musicFiles[count];
+         currentFile.play();
+         
+         println("I'M THE NEXT MUSIC: " + musicName);*/
+
+
+        // image(masks[count], faceX, faceY, faceWidth, faceHeight);
         //draws where the mouth is on the face
         rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
       }
       mouthopencv.releaseROI();
     }
+
+
+    for (int e = 0; e < pairsOfEyes.length; e++)
+    {
+      int eyeX = pairsOfEyes[e].x + eyeZoneX;
+      int eyeY = pairsOfEyes[e].y + eyeZoneY;
+
+      noFill();
+      //eyes will show in a purple box
+      stroke(127, 0, 255);
+      strokeWeight(3);
+
+      rect((eyeX), (eyeY), pairsOfEyes[e].width, pairsOfEyes[e].height);
+    }
+    eyeopencv.releaseROI();
     noseopencv.releaseROI();
   }
-
 }
 
 void changeMasks()
 {
- // currentFile.stop();
+  // currentFile.stop();
 
   if (count == maskNames.length)
   {
     count = 0;
   }
-
- 
-
-  println(count);
-  println("I'VE CHANGED MASK: " + maskName);
-
-  /* musicName = music[count];
-   musicFiles[count] = new SoundFile(this, musicName );
-   currentFile = musicFiles[count];
-   currentFile.play();
-   
-   println("I'M THE NEXT MUSIC: " + musicName);
-   */
 }

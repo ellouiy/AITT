@@ -9,15 +9,13 @@ OpenCV faceopencv, noseopencv, mouthopencv, eyeopencv;
 
 Capture cam;
 
-Rectangle[] faces, noses, mouths, eyes;
+Rectangle[] faces, noses, mouths, pairsOfEyes;
 
 String s, maskName, musicName;
 
 
 
-String[] music = {"Cantina.mp3", "scifi.mp3", "jazz.mp3"};
-SoundFile[] musicFiles = new SoundFile[music.length];
-SoundFile currentFile;
+
 
 PFont font1;
 
@@ -39,6 +37,7 @@ void setup()
 
   surface.setResizable(true);
   surface.setSize(faceopencv.width, faceopencv.height);
+  surface.setSize(eyeopencv.width, eyeopencv.height);
 
   faceopencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);
   noseopencv.loadCascade(OpenCV.CASCADE_NOSE);
@@ -70,9 +69,12 @@ void draw()
     cam.read();
     cam.loadPixels();
     faceopencv.loadImage((PImage)cam);
+    eyeopencv.loadImage((PImage)cam);
 
     image(cam, 0, 0);
     faces = faceopencv.detect();
+    pairsOfEyes = eyeopencv.detect();
+    
     textFont(font1);
     text(s, 300, 70);
 
