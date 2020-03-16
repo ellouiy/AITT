@@ -1,34 +1,28 @@
+import ddf.minim.*;
+import processing.sound.*;
 import gab.opencv.*;
 import processing.video.*;
-import processing.sound.*;
 import java.awt.Rectangle;
-import themidibus.*;
+
 
 OpenCV faceopencv, noseopencv, mouthopencv, eyeopencv;
-
-
 Capture cam;
 
 Rectangle[] faces, noses, mouths, pairsOfEyes;
 
 String s, maskName, musicName;
-
-
-
-
-
+SoundFile starWars, mario, harryPotter, thomasTheTankEngine;
+SoundFile[] music1 = new SoundFile[5];
 PFont font1;
-
 PVector averageFlow;
 
-int flowScale = 50, faceX, faceY, faceWidth, faceHeight;
-int count;
+int count, flowScale;
 float flowLengthY, flowLengthX;
 
-void setup() 
-{
-  //size(10, 10);
+boolean waitPeriod;
 
+void setup() 
+{  
   initCamera();
   faceopencv = new OpenCV(this, cam.width, cam.height);
   noseopencv = new OpenCV(this, cam.width, cam.height);
@@ -44,22 +38,38 @@ void setup()
   mouthopencv.loadCascade(OpenCV.CASCADE_MOUTH);
   eyeopencv.loadCascade(OpenCV.CASCADE_EYE);
 
+  waitPeriod = false;
   count = 0;
-
+  flowScale = 50;
  
   loadImage("infant_yerder.png");
   loadImage("princess_buns.png");
   loadImage("nerf_herder.png");
   loadImage("big_dog.png");
   
-  currentFile = new SoundFile(this, "Cantina.mp3");
-  //MidiBus.list();
+  q4 = cam.width;
+  q3 = 0.75 * cam.width;
+  q2 = 0.5 * cam.width;
+  q1 = 0.25 * cam.width;
+  q0 = 0;
+
   s = "infant yerder";
   font1 = createFont("Comic Sans MS Bold", 12);
   textFont(font1);
-
+  
+   
+  starWars = new SoundFile(this, "Cantina_Rag.mp3"); //https://freemusicarchive.org/music/Jackson_F_Smith/Jackson_Frederick_Smith/Cantina_Rag
+  mario = new SoundFile(this, "Super_Mario_remix.mp3"); //https://freemusicarchive.org/music/Bacalao/Cheat_Codes/05_Bacalao_-_Super_Mario_remix
+  harryPotter = new SoundFile(this, "Mystery.wav");  //https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100812&fbclid=IwAR0JeKpKHL3D6Ycn777XkeKwbRrnPc-fAKVW8Ol1HzTTTkuHq5_1QJQcxkQ
+  thomasTheTankEngine = new SoundFile(this, "Thomas the Tank Engine.mp3"); //https://www.youtube.com/watch?v=FCbqZjKUhMw
+  
+  music1[0]= starWars;
+  music1[1] = mario;
+  music1[2] = harryPotter;
+  music1[3] = thomasTheTankEngine;
+  
   cam.start();
-  currentFile.play();
+  music1[count].play();
 }
 
 void draw() 
@@ -79,8 +89,27 @@ void draw()
     text(s, 300, 70);
 
     faceDetection();
+    changeVolume();
+    calculateOpticalFlow();
+  }
+}
 
-    //OPTICAL FLOW
+void changeMusic()
+{
+      if(count > 0 && waitPeriod == true) //if the value is larger than 0
+        {//make sure the previous song stops
+          music1[count-1].stop();
+
+          waitPeriod = false;
+          //and the next song starts playing
+          restartCounter();
+          music1[count].play();
+        }
+}
+
+void calculateOpticalFlow()
+{
+   //OPTICAL FLOW
     faceopencv.calculateOpticalFlow();
     //image(cam, 0, 0);
     //translate(cam.width, 0);
@@ -95,36 +124,16 @@ void draw()
     strokeWeight(2);
     flowLengthY = noseopencv.height/2 + averageFlow.y*flowScale;
     flowLengthX = noseopencv.width/2 + averageFlow.x*flowScale;
-    line(noseopencv.width/2, noseopencv.height/2, flowLengthX, flowLengthY);
+    //line(noseopencv.width/2, noseopencv.height/2, flowLengthX, flowLengthY);
 
-    //println(flowLengthY);
-
-    if (flowLengthY > 260 && flowLengthX > 200)
-    {
-      println("I'M SPEEDING UP...\n");
-      //file.rate(1.2);
-    }
-
-    if (flowLengthY < 250)
-    {
-      //file.rate(1);
-      //println("I'M SLOWING DOWN...");
-    }
-    
     println(flowLengthX + " THIS IS X");
     println(flowLengthY + " THIS IS Y");
-    if(flowLengthX > 400 && flowLengthY > 260)
+    if(flowLengthX > 400 && flowLengthY > 250 && waitPeriod == true)
     {
       count++;
+      changeMusic();
     }
-  }
 }
-
-void mousePressed() 
-{
-  count++;
-}
-
 
 void initCamera()
 {
