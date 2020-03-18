@@ -20,7 +20,7 @@ int count, flowScaleFace, flowScaleHand, effectCounter, totalTime, savedTime;
 int passedTime;
 float faceFlowLengthY, faceFlowLengthX, handFlowLengthX, handFlowLengthY;
 
-boolean waitPeriod, bool;
+boolean canChangeEffect, canChangeMask;
 
 void setup() 
 {  
@@ -40,11 +40,13 @@ void setup()
   noseopencv.loadCascade(OpenCV.CASCADE_NOSE);
   mouthopencv.loadCascade(OpenCV.CASCADE_MOUTH);
   eyeopencv.loadCascade(OpenCV.CASCADE_EYE);
- // handopencv.loadCascade("fist.xml"); this xml I downloaded from github does not load...license information in folder 
+ // handopencv.loadCascade("haarcascade_smile.xml"); //this xml I downloaded from github does not load...license information in folder 
 
   //handopencv.setROI(cam.width / 9, cam.width/6, cam.width / 5, cam.height / 4);
 
-  waitPeriod = false;
+  //waitPeriod = false;
+  canChangeEffect = false;
+  canChangeMask = false;
   count = 0;
   effectCounter = 0;
   flowScaleFace = 50;
@@ -106,29 +108,40 @@ void draw()
 
     textFont(font1);
     text(s, 300, 70);
-
+    
+    //change effect line. 
+    line(0, cam.height/5, cam.width, cam.height/5);
+    
+    println("I'm cam.height / 5 " + cam.height/5);
+    println("I'm cam.width / 6 " + cam.width/6);
+    //CHANGE MASK LINE
+    line(cam.width/6, 0, cam.width/6, cam.height);
+    
     faceDetection();
-   // changeMusicEffect();
     calculateOpticalFlow();
+    changeMasks();
    triggerMusicEffectChange();
    changeMusicEffect();
    
   }
 }
-/*
-void mouseClicked() //these effects only change once per click. It is not dynamic so volume can be changed every frame depending on movement. 
- {
- effectCounter++;
- }*/
+
+
 
 void triggerMusicEffectChange()
 {
-   if (faceY <= cam.height/5)
+  
+  //line(0,0, cam.height, cam.height/5);
+   if (faceY < cam.height/5 && canChangeEffect == false)
   {
-    bool = true;
-    effectCounter++;
-    timer(1000);
+    canChangeEffect = true;
     
+    //timer(1000);
+  }
+  if(faceY > cam.height/5 && canChangeEffect == true)
+  {
+    effectCounter++;
+    canChangeEffect = false;
   }
 }
 
@@ -140,84 +153,68 @@ void changeMusicEffect()
     reverb.stop();
 
     changeVolume();
-    // println("I'm now changing VOLUME");
+   println("I'm now changing VOLUME");
   } else if (effectCounter == 2)
   {
     music1[count].amp(0.8);
 
     changeSpeed(); 
-    //   println("I'm now changing SPEED");
+    println("I'm now changing SPEED");
   } else if (effectCounter == 3)
   {
     music1[count].rate(1);
-
     applyBandPass();
-    //   println("I'm now APPLYING A BANDPASS");
+
   } else if (effectCounter == 0)
   {
     bp.stop();
     addReverb();
-    // println("I'm now changing REVERB");
+    println("REVERB");
   }
-  restartCounter();
+  checkCounter();
 }
 
 void changeMusic()
 {
- //musicChoice = music1[count];
-  timer(2000);
-  if (count > 0 && waitPeriod == true && bool == true) //if the value is larger than 0
+
+  if (count > 0 ) //if the value is larger than 0
   {//make sure the previous song stops
     music1[count-1].stop();
 
-    waitPeriod = false;
-    timer(1000);
     //and the next song starts playing
-    restartCounter();
-    
-   // if(musicChoice == currentMask.value()]) //putting in this check would make sure the count of music AND mask match up so the corresponding music plays with the correct mask every time and no glitches will happen. 
-    //{
-      music1[count].play();
-   // }  
+    checkCounter();
+    music1[count].play();
   }
 }
 
 void calculateOpticalFlow()
 {
   faceopencv.calculateOpticalFlow();
-  handopencv.calculateOpticalFlow();
-  rect(0, 0, cam.width/5, cam.height);
-  line(0, cam.height/5, cam.width, cam.height/5);
 
-  averageFlowHand = handopencv.getAverageFlow();
   averageFlowFace = faceopencv.getAverageFlow();
-
-  handFlowLengthY = handopencv.height/2 + averageFlowHand.y*flowScaleHand;
-  handFlowLengthX = handopencv.width/2 + averageFlowHand.x*flowScaleHand;
 
   faceFlowLengthY = noseopencv.height/2 + averageFlowFace.y*flowScaleFace;
   faceFlowLengthX = noseopencv.width/2 + averageFlowFace.x*flowScaleFace;
 
-   println(faceFlowLengthX + " THIS IS FACE X");
-   println(faceFlowLengthY + " THIS IS FACE Y");
-   println("you are allowed to change things now = " + waitPeriod);
+  // println(faceFlowLengthX + " THIS IS FACE X");
+  // println(faceFlowLengthY + " THIS IS FACE Y");
+}
 
-  //println(handFlowLengthX + " THIS IS HAND X");
-  //println(handFlowLengthY + " THIS IS HAND Y");
-
-  /*if (handFlowLengthX > 66 && handFlowLengthY > 240.5)
+void changeMasks()
+{
+  if(faceX < cam.width/6 && canChangeMask == false)
   {
-    effectCounter++;
-  }
-*/
-   if(faceFlowLengthX > 380 && faceFlowLengthY > 290 && waitPeriod == true)
-   {
+    canChangeMask = true;
+   }
+  if(faceX > cam.width/6 && canChangeMask == true)
+  {
      count++;
-     changeMask();
+     canChangeMask = false;
+     
+     loadMask();
      timer(2000);
      changeMusic();
-   }
-   
+  }
 }
 
 void initCamera()

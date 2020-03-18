@@ -67,8 +67,13 @@ void faceDetection()
         int mouthX = mouths[m].x;
         int mouthY = mouths[m].y;
 
-        changeMask();
-      
+        loadMask();
+/*
+        maskName = maskNames[count];
+        masks[count] = loadImage(maskName);
+        currentMask = masks[count];
+        image(currentMask, faceX, faceY, faceWidth, faceHeight);
+*/
         //draws where the mouth is on the face
         //rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
       }
@@ -93,37 +98,42 @@ void faceDetection()
   }
 }
 
-void timer()
-{
-      println("passed time = " + passedTime);
 
-        if (passedTime > totalTime && waitPeriod == false)
-        {
-          println("YOU MAY NOW PROCEED");
-          waitPeriod = true;
-          savedTime = millis(); //saves the current time and restarts the timer
-        }
+
+void timer(int totalTime)
+{
+  println("passed time = " + passedTime);
+
+  if (passedTime > totalTime)
+  {
+    println("YOU MAY NOW PROCEED");
+   // waitPeriod = true;
+    savedTime = millis(); //saves the current time and restarts the timer
+  }
 }
 
-void changeMask()
+void loadMask()
 {
-  timer();
-  if (faceY < cam.height/5)
-  {
-    count++;
-    changeMusic();
-  }
-
-  restartCounter();
+  timer(2000);
+  checkCounter();
 
   maskName = maskNames[count];
   masks[count] = loadImage(maskName);
   currentMask = masks[count];
-  
+
+  /* if (faceY <= cam.height/5)
+   {
+   bool = true;
+   effectCounter ++;
+   // count++;
+   //timer(3000);//in a bid to delay music changing too fast timer() was made to give the PC time to recognise that the count has incremented. 
+   //changeMusic();
+   }*/
+
   image(currentMask, faceX, faceY, faceWidth, faceHeight);
 }
 
-void restartCounter()
+void checkCounter()
 {
   if (count == maskNames.length)
   {
