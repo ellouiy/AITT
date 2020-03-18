@@ -74,6 +74,7 @@ void addReverb()
     reverb.wet(1);
   } else if (faceX > q2 && faceX < q3)
   {
+    // NullPointerException here??? presumably because count has incremented too quickly and the music that is meant to play shown by count is not the same as the count that has incremented due to faceX being above the line. 
     reverb.process(music1[count]);
     reverb.wet(1.5);
   } else if (faceX > q3 && faceX < q4)

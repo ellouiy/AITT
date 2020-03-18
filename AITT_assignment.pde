@@ -11,7 +11,7 @@ Capture cam;
 Rectangle[] faces, noses, mouths, pairsOfEyes;
 
 String s, maskName, musicName;
-SoundFile starWars, mario, harryPotter, thomasTheTankEngine;
+SoundFile starWars, mario, harryPotter, thomasTheTankEngine, musicChoice;
 SoundFile[] music1 = new SoundFile[5]; //I'm aware this is bad practice, but I need music1[] to be a global variable so I can use it elsewhere at runtime. If I instantiate it in setup() then music1[] is not recognised elsewhere.
 PFont font1;
 PVector averageFlowFace, averageFlowHand;
@@ -20,7 +20,7 @@ int count, flowScaleFace, flowScaleHand, effectCounter, totalTime, savedTime;
 int passedTime;
 float faceFlowLengthY, faceFlowLengthX, handFlowLengthX, handFlowLengthY;
 
-boolean waitPeriod;
+boolean waitPeriod, bool;
 
 void setup() 
 {  
@@ -67,7 +67,7 @@ void setup()
   s = "infant yerder";
   font1 = createFont("Comic Sans MS Bold", 12);
   textFont(font1);
-  totalTime = 5000;
+  //totalTime = 5000;
   savedTime = millis();
 
   starWars = new SoundFile(this, "Music/Cantina_Rag.mp3"); //https://freemusicarchive.org/music/Jackson_F_Smith/Jackson_Frederick_Smith/Cantina_Rag
@@ -81,6 +81,7 @@ void setup()
   music1[3] = thomasTheTankEngine;
 
   cam.start();
+  timer(5000);
   music1[count].amp(0.8);
   music1[count].play();
 }
@@ -107,8 +108,11 @@ void draw()
     text(s, 300, 70);
 
     faceDetection();
-    changeMusicEffect();
+   // changeMusicEffect();
     calculateOpticalFlow();
+   triggerMusicEffectChange();
+   changeMusicEffect();
+   
   }
 }
 /*
@@ -117,8 +121,20 @@ void mouseClicked() //these effects only change once per click. It is not dynami
  effectCounter++;
  }*/
 
+void triggerMusicEffectChange()
+{
+   if (faceY <= cam.height/5)
+  {
+    bool = true;
+    effectCounter++;
+    timer(1000);
+    
+  }
+}
+
 void changeMusicEffect()
 {
+  timer(1000);
   if (effectCounter == 1)
   {
     reverb.stop();
@@ -148,15 +164,21 @@ void changeMusicEffect()
 
 void changeMusic()
 {
-  timer();
-  if (count > 0 && waitPeriod == true) //if the value is larger than 0
+ //musicChoice = music1[count];
+  timer(2000);
+  if (count > 0 && waitPeriod == true && bool == true) //if the value is larger than 0
   {//make sure the previous song stops
     music1[count-1].stop();
 
     waitPeriod = false;
+    timer(1000);
     //and the next song starts playing
     restartCounter();
-    music1[count].play();
+    
+   // if(musicChoice == currentMask.value()]) //putting in this check would make sure the count of music AND mask match up so the corresponding music plays with the correct mask every time and no glitches will happen. 
+    //{
+      music1[count].play();
+   // }  
   }
 }
 
@@ -176,23 +198,26 @@ void calculateOpticalFlow()
   faceFlowLengthY = noseopencv.height/2 + averageFlowFace.y*flowScaleFace;
   faceFlowLengthX = noseopencv.width/2 + averageFlowFace.x*flowScaleFace;
 
-  // println(faceFlowLengthX + " THIS IS FACE X");
-  // println(faceFlowLengthY + " THIS IS FACE Y");
+   println(faceFlowLengthX + " THIS IS FACE X");
+   println(faceFlowLengthY + " THIS IS FACE Y");
+   println("you are allowed to change things now = " + waitPeriod);
 
-  println(handFlowLengthX + " THIS IS HAND X");
-  println(handFlowLengthY + " THIS IS HAND Y");
+  //println(handFlowLengthX + " THIS IS HAND X");
+  //println(handFlowLengthY + " THIS IS HAND Y");
 
-  if (handFlowLengthX > 66 && handFlowLengthY > 240.5)
+  /*if (handFlowLengthX > 66 && handFlowLengthY > 240.5)
   {
     effectCounter++;
   }
-
-  /* if(faceFlowLengthX > 400 && faceFlowLengthY > 320 && waitPeriod == true)
+*/
+   if(faceFlowLengthX > 380 && faceFlowLengthY > 290 && waitPeriod == true)
    {
-   count++;
-   changeMusic();
+     count++;
+     changeMask();
+     timer(2000);
+     changeMusic();
    }
-   */
+   
 }
 
 void initCamera()
