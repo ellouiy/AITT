@@ -13,17 +13,17 @@ void faceDetection()
     stroke(255, 0, 0);
     strokeWeight(3);
     faceX = faces[i].x; 
-     faceY = faces[i].y;
-     faceWidth = faces[i].width;
-     faceHeight = faces[i].height;
-     noseZoneX = faceX + (faceWidth/3);
-     noseZoneY = faceY + (faceHeight/3);
-     noseZoneWidth = faceWidth/2; //3 sometimes works
-     noseZoneHeight = faceHeight/2;
-     eyeZoneX = faceX;
-     eyeZoneY = faceY;
-     eyeZoneWidth = faceWidth;
-     eyeZoneHeight = faceHeight/2;
+    faceY = faces[i].y;
+    faceWidth = faces[i].width;
+    faceHeight = faces[i].height;
+    noseZoneX = faceX + (faceWidth/3);
+    noseZoneY = faceY + (faceHeight/3);
+    noseZoneWidth = faceWidth/2; //3 sometimes works
+    noseZoneHeight = faceHeight/2;
+    eyeZoneX = faceX;
+    eyeZoneY = faceY;
+    eyeZoneWidth = faceWidth;
+    eyeZoneHeight = faceHeight/2;
 
     //rect(faceX, faceY, faces[i].width, faces[i].height);
 
@@ -31,7 +31,7 @@ void faceDetection()
     stroke(0, 0, 255);
     noseopencv.setROI(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
     eyeopencv.setROI(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
-    rect(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
+    //rect(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
     //rect(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
     noses = noseopencv.detect();
     pairsOfEyes = eyeopencv.detect();
@@ -52,7 +52,7 @@ void faceDetection()
       int mouthZoneHeight = faceHeight/2;
 
       //draws where the nose is
-      rect(noseX, noseY, noseWidth, noseHeight); // do NOT use ellipse, it measures x and y from the centre of the circle, not the top left point like a rect!
+      // rect(noseX, noseY, noseWidth, noseHeight); // do NOT use ellipse, it measures x and y from the centre of the circle, not the top left point like a rect!
 
       mouthopencv.loadImage((PImage) cam);
       //draws the zone within a face where the mouth will be detected, aka the lower half of the face.
@@ -67,28 +67,10 @@ void faceDetection()
         int mouthX = mouths[m].x;
         int mouthY = mouths[m].y;
 
-        restartCounter();
-
-        //FOR SOME REASON the below block of code won't work if I put it into the changeMasks method? Therefore keepingi t out here.   
-        maskName = maskNames[count];
-        masks[count] = loadImage(maskName);
-        currentMask = masks[count];
-        println("THIS IS THE CURRENT MASK: " + maskName);
-        //currentFile.stop();
-        image(currentMask, faceX, faceY, faceWidth, faceHeight);
-        
-        if(waitPeriod == false)
-        {
-           waitPeriod = true; 
-        }
-        
-   
-        
-       
-        // println("I'M THE NEXT MUSIC: " + music1[count]);
-
+        changeMask();
+      
         //draws where the mouth is on the face
-        rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
+        //rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
       }
       mouthopencv.releaseROI();
     }
@@ -104,11 +86,41 @@ void faceDetection()
       stroke(127, 0, 255);
       strokeWeight(3);
 
-      rect((eyeX), (eyeY), pairsOfEyes[e].width, pairsOfEyes[e].height);
+      //rect((eyeX), (eyeY), pairsOfEyes[e].width, pairsOfEyes[e].height);
     }
     eyeopencv.releaseROI();
     noseopencv.releaseROI();
   }
+}
+
+void timer()
+{
+      println("passed time = " + passedTime);
+
+        if (passedTime > totalTime && waitPeriod == false)
+        {
+          println("YOU MAY NOW PROCEED");
+          waitPeriod = true;
+          savedTime = millis(); //saves the current time and restarts the timer
+        }
+}
+
+void changeMask()
+{
+  timer();
+  if (faceY < cam.height/5)
+  {
+    count++;
+    changeMusic();
+  }
+
+  restartCounter();
+
+  maskName = maskNames[count];
+  masks[count] = loadImage(maskName);
+  currentMask = masks[count];
+  
+  image(currentMask, faceX, faceY, faceWidth, faceHeight);
 }
 
 void restartCounter()
@@ -116,5 +128,10 @@ void restartCounter()
   if (count == maskNames.length)
   {
     count = 0;
+  }
+
+  if (effectCounter == 4) //hardcoded 4 instead of putting number of music effects that are variable into an array
+  {
+    effectCounter = 0;
   }
 }

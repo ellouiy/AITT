@@ -9,16 +9,16 @@ void changeVolume()
 {
   if (faceX > q0 && faceX < q1)
   {
-    music1[count].amp(0.25);
+    music1[count].amp(0);
   } else if (faceX > q1 && faceX < q2)
   {
-    music1[count].amp(0.5);
+    music1[count].amp(0.6);
   } else if (faceX > q2 && faceX < q3)
   {
-    music1[count].amp(1);
+    music1[count].amp(0.8);
   } else if (faceX > q3 && faceX < q4)
   {
-    music1[count].amp(2);
+    music1[count].amp(1);
   }
 }
 
@@ -26,16 +26,16 @@ void changeSpeed()
 {
   if (faceX > q0 && faceX < q1)
   {
-    music1[count].rate(0.25);
+    music1[count].rate(0.5);
   } else if (faceX > q1 && faceX < q2)
   {
-    music1[count].rate(0.5);
+    music1[count].rate(0.75);
   } else if (faceX > q2 && faceX < q3)
   {
     music1[count].rate(1);
   } else if (faceX > q3 && faceX < q4)
   {
-    music1[count].rate(2);
+    music1[count].rate(1.25);
   }
 }
 
@@ -45,19 +45,19 @@ void applyBandPass()
 
   if (faceX > q0 && faceX < q1)
   {
-    bp.set(500, 40);
+    bp.set(750, 150);
     bp.process(music1[count]);
   } else if (faceX > q1 && faceX < q2)
   {
-    bp.set(600, 60);
+    bp.set(1000, 200);
     bp.process(music1[count]);
   } else if (faceX > q2 && faceX < q3)
   {
-    bp.set(700, 80);
+    bp.set(1500, 250);
     bp.process(music1[count]);
   } else if (faceX > q3 && faceX < q4)
   {
-    bp.set(800, 100);
+    bp.set(2000, 300);
     bp.process(music1[count]);
   }
 }
@@ -67,18 +67,18 @@ void addReverb()
   if (faceX > q0 && faceX < q1)
   {
     reverb.process(music1[count]);
-    reverb.wet(0);
+    reverb.wet(0.5);
   } else if (faceX > q1 && faceX < q2)
   {
     reverb.process(music1[count]);
-    reverb.wet(0.25);
+    reverb.wet(1);
   } else if (faceX > q2 && faceX < q3)
   {
     reverb.process(music1[count]);
-    reverb.wet(0.5);
+    reverb.wet(1.5);
   } else if (faceX > q3 && faceX < q4)
   {
     reverb.process(music1[count]);
-    reverb.wet(0.75);
+    reverb.wet(2);
   }
 }
