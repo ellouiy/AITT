@@ -1,20 +1,21 @@
 class Character
 {
-   Character(PImage mask, SoundFile music)
+   SoundFile chosenMusic;
+   PImage maskNow;
+   
+   Character(PImage mask, SoundFile music, float x, float y, float xOffset, float yOffset)
    {
-     currentMask = mask;
-     musicChoice = music;
+     maskNow = mask;
+     chosenMusic = music;
    }
-     
    
    SoundFile sound()
    {
-      return musicChoice;
+      return chosenMusic;
    }
    
    PImage maskChoice()
    {
-    return currentMask; 
+    return maskNow; 
    }
-  
 }

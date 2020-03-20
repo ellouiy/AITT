@@ -1,9 +1,9 @@
 
-String maskNames[] ={"infant_yerder.png", "princess_buns.png", "nerf_herder.png", "big_dog.png"};
-PImage[] masks = new PImage[maskNames.length]; 
+//String maskNames[] ={"infant_yerder.png", "princess_buns.png", "nerf_herder.png", "big_dog.png"};
+//PImage[] masks = new PImage[maskNames.length]; 
 PImage currentMask;
-
-int faceX, faceY, faceWidth, faceHeight, noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight, eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight;
+int faceHeight, faceWidth;
+int faceX, faceY, noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight, eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight;
 void faceDetection() 
 {
   for (int i = 0; i < faces.length; i++)
@@ -26,12 +26,11 @@ void faceDetection()
     eyeZoneHeight = faceHeight/2;
 
     //rect(faceX, faceY, faces[i].width, faces[i].height);
-
+    
     noseopencv.loadImage((PImage) cam);
     stroke(0, 0, 255);
     noseopencv.setROI(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
-    eyeopencv.setROI(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
-    //rect(eyeZoneX, eyeZoneY, eyeZoneWidth, eyeZoneHeight);
+
     //rect(noseZoneX, noseZoneY, noseZoneWidth, noseZoneHeight);
     noses = noseopencv.detect();
     pairsOfEyes = eyeopencv.detect();
@@ -66,34 +65,11 @@ void faceDetection()
         strokeWeight(3);
         int mouthX = mouths[m].x;
         int mouthY = mouths[m].y;
-
+        
         loadMask();
-/*
-        maskName = maskNames[count];
-        masks[count] = loadImage(maskName);
-        currentMask = masks[count];
-        image(currentMask, faceX, faceY, faceWidth, faceHeight);
-*/
-        //draws where the mouth is on the face
-        //rect((mouthZoneX + mouthX), (mouthZoneY + mouthY), mouths[m].width, mouths[m].height);
       }
-      mouthopencv.releaseROI();
     }
-
-
-    for (int e = 0; e < pairsOfEyes.length; e++)
-    {
-      int eyeX = pairsOfEyes[e].x + eyeZoneX;
-      int eyeY = pairsOfEyes[e].y + eyeZoneY;
-
-      noFill();
-      //eyes will show in a purple box
-      stroke(127, 0, 255);
-      strokeWeight(3);
-
-      //rect((eyeX), (eyeY), pairsOfEyes[e].width, pairsOfEyes[e].height);
-    }
-    eyeopencv.releaseROI();
+    mouthopencv.releaseROI();
     noseopencv.releaseROI();
   }
 }
@@ -102,7 +78,7 @@ void faceDetection()
 
 void timer(int totalTime)
 {
-  println("passed time = " + passedTime);
+  //println("passed time = " + passedTime);
 
   if (passedTime > totalTime)
   {
@@ -114,28 +90,32 @@ void timer(int totalTime)
 
 void loadMask()
 {
-  timer(2000);
   checkCounter();
+  
+    currentMask = characters[count].maskChoice();
 
-  maskName = maskNames[count];
-  masks[count] = loadImage(maskName);
-  currentMask = masks[count];
-
-  /* if (faceY <= cam.height/5)
+  
+    if(count == 0) //yoda
    {
-   bool = true;
-   effectCounter ++;
-   // count++;
-   //timer(3000);//in a bid to delay music changing too fast timer() was made to give the PC time to recognise that the count has incremented. 
-   //changeMusic();
-   }*/
-
-  image(currentMask, faceX, faceY, faceWidth, faceHeight);
+      image(currentMask, faceX - cam.width/10, faceY - cam.height/7, faceWidth + faceWidth*1.2, faceHeight +  faceHeight*1.2);
+   }
+   if(count == 1) //mario
+   {
+     image(currentMask, faceX - cam.width/20, faceY - cam.height/10, faceWidth+faceWidth*0.5, faceHeight*0.8);
+   }
+   if(count == 2)
+   {
+     image(currentMask, faceX, faceY, faceWidth, faceHeight);
+   }
+   if(count ==3)
+   {
+     image(currentMask, faceX - faceWidth/2, faceY - faceHeight*0.75, faceWidth + faceWidth, faceHeight +  faceHeight);
+   }
 }
 
 void checkCounter()
 {
-  if (count == maskNames.length)
+  if (count == characters.length) //hardcoded since we cannot return characters[count].length(), or sizeOf(ARRAY)
   {
     count = 0;
   }

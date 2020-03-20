@@ -7,45 +7,53 @@ Reverb reverb;
 
 void changeVolume()
 {
-  
-if(faceFlowLengthX > 380 && faceFlowLengthY > 290)
+
+  if (faceFlowLengthX > 320 && faceFlowLengthX < 340)
   {
-      //something    
-  }
-  
-  
-  
-  
-  
-  if (faceX > q0 && faceX < q1)
+    characters[count].sound().amp(0.4);
+    
+    println("QUIET QUIET");
+
+  } else if (faceFlowLengthX > 340 && faceFlowLengthX < 350)
   {
-    music1[count].amp(0);
-  } else if (faceX > q1 && faceX < q2)
+    characters[count].sound().amp(0.6);
+    
+    println("KINDA QUIET");
+    // music1[count].amp(0.6);
+  } else if (faceFlowLengthX > 350 && faceFlowLengthX < 365)
   {
-    music1[count].amp(0.6);
-  } else if (faceX > q2 && faceX < q3)
+    characters[count].sound().amp(0.8);
+    
+    println("LOUDER");
+    
+    // music1[count].amp(0.8);
+  } else if (faceFlowLengthX > 365)// && faceFlowLengthY < 200)
   {
-    music1[count].amp(0.8);
-  } else if (faceX > q3 && faceX < q4)
-  {
-    music1[count].amp(1);
+    characters[count].sound().amp(1);
+    
+    println("LOUDEST");
+    //music1[count].amp(1);
   }
 }
 
 void changeSpeed()
 {
-  if (faceX > q0 && faceX < q1)
+  if (faceFlowLengthX > 320 && faceFlowLengthX < 340)
   {
-    music1[count].rate(0.5);
-  } else if (faceX > q1 && faceX < q2)
+    characters[count].sound().rate(0.5);
+    //music1[count].rate(0.5);
+  } else if (faceFlowLengthX > 340 && faceFlowLengthX < 350)
   {
-    music1[count].rate(0.75);
-  } else if (faceX > q2 && faceX < q3)
+    characters[count].sound().rate(0.75);
+    //music1[count].rate(0.75);
+  } else if (faceFlowLengthX > 350 && faceFlowLengthX < 365)
   {
-    music1[count].rate(1);
-  } else if (faceX > q3 && faceX < q4)
+    characters[count].sound().rate(1);
+    // music1[count].rate(1);
+  } else if (faceFlowLengthX > 365)
   {
-    music1[count].rate(1.25);
+    characters[count].sound().rate(1.2);
+    //music1[count].rate(1.25);
   }
 }
 
@@ -53,43 +61,51 @@ void applyBandPass()
 {
   //https://www.youtube.com/watch?v=SGFJMwr-IqA
 
-  if (faceX > q0 && faceX < q1)
+  if (faceFlowLengthX > 320 && faceFlowLengthX < 340)
   {
     bp.set(750, 150);
-    bp.process(music1[count]);
-  } else if (faceX > q1 && faceX < q2)
+    bp.process(characters[count].sound());
+    //bp.process(music1[count]);
+  } else if (faceFlowLengthX > 340 && faceFlowLengthX < 350)
   {
     bp.set(1000, 200);
-    bp.process(music1[count]);
-  } else if (faceX > q2 && faceX < q3)
+    bp.process(characters[count].sound());
+    // bp.process(music1[count]);
+  } else if (faceFlowLengthX > 350 && faceFlowLengthX < 365)
   {
     bp.set(1500, 250);
-    bp.process(music1[count]);
-  } else if (faceX > q3 && faceX < q4)
+    bp.process(characters[count].sound());
+    //bp.process(music1[count]);
+  } else if (faceFlowLengthX > 365)
   {
     bp.set(2000, 300);
-    bp.process(music1[count]);
+    bp.process(characters[count].sound());
+    //bp.process(music1[count]);
   }
 }
 
 void addReverb()
 {
-  if (faceX > q0 && faceX < q1)
+  if (faceFlowLengthX > 320 && faceFlowLengthX < 340)
   {
-    reverb.process(music1[count]);
+    //reverb.process(music1[count]);
     reverb.wet(0.5);
-  } else if (faceX > q1 && faceX < q2)
+    reverb.process(characters[count].sound());
+  } else if (faceFlowLengthX > 340 && faceFlowLengthX < 350)
   {
-    reverb.process(music1[count]);
+    //reverb.process(music1[count]);
     reverb.wet(1);
-  } else if (faceX > q2 && faceX < q3)
+    reverb.process(characters[count].sound());
+  } else if (faceFlowLengthX > 350 && faceFlowLengthX < 365)
   {
     // NullPointerException here??? presumably because count has incremented too quickly and the music that is meant to play shown by count is not the same as the count that has incremented due to faceX being above the line. 
-    reverb.process(music1[count]);
+    // reverb.process(music1[count]);
     reverb.wet(1.5);
-  } else if (faceX > q3 && faceX < q4)
+    reverb.process(characters[count].sound());
+  } else if (faceFlowLengthX > 365)
   {
-    reverb.process(music1[count]);
+    // reverb.process(music1[count]);
     reverb.wet(2);
+    reverb.process(characters[count].sound());
   }
 }
